@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .user-form {
+            margin-bottom: 30px;
+        }
+
+        .user-form input {
+            padding: 10px;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .user-form button {
+            padding: 10px;
+            font-size: 14px;
+            background-color: #E95420;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .user-form button:hover {
+            background-color: #bf4216;
+        }
+
+        .user-list {
+            list-style-type: none;
+        }
+
+        .btn-delete-user {
+            background-color: #FF4C4C;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .btn-delete-user:hover {
+            background-color: #d43f3f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Users</h1>
+
+	<!-- Manage Users Form -->
+	<form class="user-form" action="{{ url_for('manage_users') }}" method="POST">
+    		<input type="text" name="name" placeholder="Enter user name" required>
+	        <button type="submit">Add User</button>
+	</form>
+
+        <h2>Existing Users</h2>
+        <ul class="user-list">
+            {% for user in users %}
+                <li>
+                    {{ user.name }}
+                    <a href="{{ url_for('delete_user', user_id=user.id) }}" class="btn-delete-user" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <a href="{{ url_for('index') }}">Back to Calendar</a>
+    </div>
+</body>
+</html>
