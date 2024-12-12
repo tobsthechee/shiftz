@@ -10,7 +10,7 @@
 <body class="{{ 'dark-theme' if 'dark' in request.cookies.get('theme', '') else '' }}">
     <div class="container">
         <header>
-            <h1>Shift Scheduler</h1>
+            <h1>Shiftz</h1>
             <!-- Theme Toggle and User Management Button Section -->
             <div class="header-right">
                 <button id="theme-toggle" onclick="toggleTheme()">🌙 / 🌞</button>
@@ -20,7 +20,7 @@
 
         <!-- Buttons to Navigate Between Pages -->
         <div class="navigation-buttons">
-            <a href="{{ url_for('shift_management') }}" class="btn">Manage Shifts</a>
+            <a href="{{ url_for('shift_management') }}" class="btn">Create Shifts</a>
             <a href="{{ url_for('report') }}" class="btn">Generate Report</a>
         </div>
 
@@ -45,7 +45,6 @@
                 header: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'month'
                 },
                 events: [
                     {% for shift in shifts %}

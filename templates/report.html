@@ -5,76 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shift Report</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script>
-        // Theme switching logic
-        function toggleTheme() {
-            const currentTheme = localStorage.getItem('theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            localStorage.setItem('theme', newTheme);
-            document.body.className = newTheme;
-        }
-
-        // Apply saved theme on page load
-        window.onload = function() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.body.className = savedTheme;
-        }
-    </script>
 </head>
-<body>
+<body class="{{ 'dark-theme' if 'dark' in request.cookies.get('theme', '') else '' }}">
     <div class="container">
-        <header>
-            <h1>Shift Report</h1>
-            <button onclick="toggleTheme()">Toggle Theme</button>
-        </header>
+        <h1>Shift Report</h1>
+
+	<div class="navigation-buttons">
         <!-- Back to Main Page Button -->
         <button class="btn-back" onclick="window.location.href='{{ url_for('index') }}'">Back to Main Page</button>
-	<p>
-        <!-- User Selection for Filtering -->
+	</div>
+
+	<div class="report">
+        <!-- Filter by User, Month, and Year -->
         <form action="{{ url_for('report') }}" method="GET">
-            <label for="user">Select User:</label>
-            <select name="user_id" id="user">
+            <label for="month">Select Month:</label>
+            <select name="month" id="month">
+                <option value="1" {% if month == 1 %}selected{% endif %}>January</option>
+                <option value="2" {% if month == 2 %}selected{% endif %}>February</option>
+                <option value="3" {% if month == 3 %}selected{% endif %}>March</option>
+                <option value="4" {% if month == 4 %}selected{% endif %}>April</option>
+                <option value="5" {% if month == 5 %}selected{% endif %}>May</option>
+                <option value="6" {% if month == 6 %}selected{% endif %}>June</option>
+                <option value="7" {% if month == 7 %}selected{% endif %}>July</option>
+                <option value="8" {% if month == 8 %}selected{% endif %}>August</option>
+                <option value="9" {% if month == 9 %}selected{% endif %}>September</option>
+                <option value="10" {% if month == 10 %}selected{% endif %}>October</option>
+                <option value="11" {% if month == 11 %}selected{% endif %}>November</option>
+                <option value="12" {% if month == 12 %}selected{% endif %}>December</option>
+            </select>
+
+            <label for="year">Select Year:</label>
+            <select name="year" id="year">
+                {% for year in year_range %}
+                    <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="user_id">Select User:</label>
+            <select name="user_id" id="user_id">
                 <option value="">All Users</option>
                 {% for user in users %}
                     <option value="{{ user.id }}" {% if request.args.get('user_id') == user.id|string %}selected{% endif %}>{{ user.name }}</option>
                 {% endfor %}
             </select>
+
             <button type="submit">Filter</button>
         </form>
+	</div>
 
-        <hr>
-
-        <!-- Display Shifts Grouped by User -->
+        <!-- Display Report -->
         {% for user, user_shifts in shifts_by_user.items() %}
-            <h3>{{ user.name }}</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th>Break Time</th>
-                        <th>Total Time</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for shift in user_shifts %}
-                        <tr>
-                            <td>{{ shift.formatted_start_time() }}</td>
-                            <td>{{ shift.formatted_end_time() }}</td>
-                            <td>{{ shift.break_time }} mins</td>
-                            <td>{{ shift.formatted_total_time() }}</td>
-                            <td>
-                                <a href="{{ url_for('edit_shift', shift_id=shift.id) }}">Edit</a>
-                                <a href="{{ url_for('delete_shift', shift_id=shift.id) }}" onclick="return confirm('Are you sure you want to delete this shift?')">Delete</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <p><strong>Total worked hours:</strong> {{ total_hours_by_user[user] }}</p>
+        <h2>{{ user.name }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Break Time (mins)</th>
+                    <th>Total Time Worked</th>
+                    <th>Description</th>
+                    <th>Actions</th> <!-- New Actions column -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for shift in user_shifts %}
+                <tr>
+                    <td>{{ shift.formatted_start_time() }}</td>
+                    <td>{{ shift.formatted_end_time() }}</td>
+                    <td>{{ shift.break_time }}</td>
+                    <td>{{ shift.formatted_total_time() }}</td>
+                    <td>{{ shift.description or 'N/A' }}</td>
+                    <td>
+                        <!-- Delete Button -->
+                        <form action="{{ url_for('delete_shift', shift_id=shift.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn-delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p><strong>Total Hours Worked: </strong>{{ total_hours_by_user[user] }}</p>
         {% endfor %}
-
     </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

@@ -4,67 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f8f8;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .user-form {
-            margin-bottom: 30px;
-        }
-
-        .user-form input {
-            padding: 10px;
-            margin-right: 10px;
-            font-size: 14px;
-        }
-
-        .user-form button {
-            padding: 10px;
-            font-size: 14px;
-            background-color: #E95420;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .user-form button:hover {
-            background-color: #bf4216;
-        }
-
-        .user-list {
-            list-style-type: none;
-        }
-
-        .btn-delete-user {
-            background-color: #FF4C4C;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .btn-delete-user:hover {
-            background-color: #d43f3f;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="{{ 'dark-theme' if 'dark' in request.cookies.get('theme', '') else '' }}">
+
     <div class="container">
         <h1>Manage Users</h1>
-
-	<!-- Manage Users Form -->
-	<form class="user-form" action="{{ url_for('manage_users') }}" method="POST">
-    		<input type="text" name="name" placeholder="Enter user name" required>
-	        <button type="submit">Add User</button>
-	</form>
+        <!-- Back to Main Page Button -->
+        <button class="btn-back" onclick="window.location.href='{{ url_for('index') }}'">Back to Main Page</button>
+	<p>
+        <!-- Manage Users Form -->
+        <form class="user-form" action="{{ url_for('manage_users') }}" method="POST">
+            <input type="text" name="name" placeholder="Enter user name" required>
+            <button type="submit">Add User</button>
+        </form>
 
         <h2>Existing Users</h2>
         <ul class="user-list">
@@ -75,8 +28,16 @@
                 </li>
             {% endfor %}
         </ul>
-
-        <a href="{{ url_for('index') }}">Back to Calendar</a>
     </div>
+
+    <script>
+        // Toggle theme between light and dark mode
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            var theme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+            document.cookie = "theme=" + theme + "; path=/";  // Set the theme in cookies
+        }
+    </script>
+
 </body>
 </html>
