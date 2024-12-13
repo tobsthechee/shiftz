@@ -1,7 +1,7 @@
 # Use Alpine Linux as the base image for a lightweight container
 FROM python:3.11-alpine
 
-# Install necessary dependencies for WeasyPrint
+# Install necessary dependencies for WeasyPrint and fonts
 RUN apk update && apk add --no-cache \
     build-base \
     libffi-dev \
@@ -14,7 +14,9 @@ RUN apk update && apk add --no-cache \
     gdk-pixbuf-dev \
     libjpeg-turbo-dev \
     libxml2-dev \
-    libxslt-dev
+    libxslt-dev \
+    fontconfig \
+    ttf-freefont
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -U pip setuptools

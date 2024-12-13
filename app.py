@@ -189,6 +189,62 @@ def report():
     return render_template('report.html', shifts_by_user=shifts_by_user, total_hours_by_user=total_hours_by_user, users=users, year_range=year_range, current_month=current_month, current_year=current_year, month=month, year=year)
 
 
+@app.route('/pdfgen', methods=['GET'])
+def pdfgen():
+    # Get the user_id, month, and year from the query string
+    user_id = request.args.get('user_id', type=int)
+    month = request.args.get('month', default=None, type=int)  # Get the month parameter as integer
+    year = request.args.get('year', default=None, type=int)  # Get the year parameter as integer
+
+    # Get the current year and month
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+
+    # If no year is provided, default to the current year
+    if not year:
+        year = current_year
+
+    # If no month is provided, default to the current month
+    if not month:
+        month = current_month
+
+    # Generate the year range (from 5 years ago to 1 year in the future)
+    year_range = list(range(current_year - 5, current_year + 2))
+
+    # Start the query
+    shifts_query = Shift.query
+
+    # Filter by user if user_id is provided
+    if user_id:
+        shifts_query = shifts_query.filter_by(user_id=user_id)
+
+    # Filter by month if month is provided (adjust for SQLite compatibility)
+    if month:
+        shifts_query = shifts_query.filter(func.strftime('%m', Shift.start_time) == f'{month:02d}')
+
+    # Filter by year if year is provided (adjust for SQLite compatibility)
+    if year:
+        shifts_query = shifts_query.filter(func.strftime('%Y', Shift.start_time) == str(year))
+
+    # Fetch all the filtered shifts and sort by start_time (ascending)
+    shifts = shifts_query.order_by(Shift.start_time).all()
+
+    # Group shifts by user
+    users = User.query.all()  # Get all users to display in the report options
+    shifts_by_user = {}
+    for user in users:
+        shifts_by_user[user] = [shift for shift in shifts if shift.user_id == user.id]
+
+    # Calculate total worked hours for each user
+    total_hours_by_user = {}
+    for user, user_shifts in shifts_by_user.items():
+        total_minutes = sum([shift.total_time for shift in user_shifts])
+        total_hours = total_minutes // 60
+        total_minutes_remaining = total_minutes % 60
+        total_hours_by_user[user] = f"{total_hours}h {total_minutes_remaining}m"
+
+    return render_template('pdfgen.html', shifts=shifts, total_hours_by_user=total_hours_by_user, user=request.args.get('user_id', ''), month=month, year=year, users=users, current_month=current_month, current_year=current_year)
+
 
 if __name__ == '__main__':
     with app.app_context():
