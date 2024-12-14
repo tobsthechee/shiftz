@@ -27,5 +27,5 @@ License
 This project is licensed under the MIT License.
 <br>
 <br>
-Contributions
+<h2>Contributions</h2>
 Contributions and feedback are welcome! Feel free to open issues or submit pull requests.
