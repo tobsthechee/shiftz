@@ -31,14 +31,22 @@
                 <!-- Break Time (in minutes) -->
                 <div class="form-group">
                     <label for="break_time">Break Time (minutes):</label>
-                    <input type="number" id="break_time" name="break_time" required class="datetime-input">
+                    <input type="number" id="break_time" name="break_time" required class="datetime-input" value="0">
                 </div>
 
-                <!-- Description (Optional) -->
-                <div class="form-group">
-                    <label for="description">Description (Optional):</label>
-                    <input type="text" id="description" name="description" class="description-input" placeholder="Optional shift description">
-                </div>
+<!-- Description (Optional) -->
+<div class="form-group">
+    <label for="description">Description (Optional):</label>
+    <input list="predefined-descriptions" id="description" name="description" placeholder="Optional shift description" class="datetime-input">
+    <datalist id="predefined-descriptions">
+        <option value="Morning">
+        <option value="Afternoon">
+        <option value="Night">
+        <option value="On-Call">
+        <option value="Remote Work">
+        <option value="Overtime Work">
+    </datalist>
+</div>
 
                 <!-- User Selection -->
                 <div class="form-group">

@@ -20,7 +20,7 @@
         	<button type="submit" class="btn-back">Generate PDF</button>
     	  </form>
 	</div>
-
+	<p></p>
 	<div class="report">
         <!-- Filter by User, Month, and Year -->
         <form action="{{ url_for('report') }}" method="GET">
@@ -81,12 +81,14 @@
                     <td>{{ shift.break_time }}</td>
                     <td>{{ shift.formatted_total_time() }}</td>
                     <td>{{ shift.description or 'N/A' }}</td>
-                    <td>
-                        <!-- Delete Button -->
-                        <form action="{{ url_for('delete_shift', shift_id=shift.id) }}" method="POST" style="display:inline;">
-                            <button type="submit" class="btn-delete">Delete</button>
-                        </form>
-                    </td>
+		    <td>
+    			<div class="actions-container">
+       			<!-- Delete Button -->
+        		<form action="{{ url_for('delete_shift', shift_id=shift.id) }}" method="POST" style="display:inline;">
+            		<button type="submit" class="btn-delete">Delete</button>
+        </form>
+    </div>
+</td>
                 </tr>
                 {% endfor %}
             </tbody>
